@@ -385,7 +385,5 @@ monotonic_align/core.c
 log.txt
 .venv/
 model/
-ChatWaifuGameL2D/game/Resources/ariu/
 ChatWaifuGameL2D/game/saves/
 ChatWaifuGameL2D/game/cache/
-ChatWaifuGameL2D/game/traceback.txt
