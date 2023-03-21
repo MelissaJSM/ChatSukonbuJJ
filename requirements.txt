@@ -16,7 +16,7 @@ ko_pron
 indic_transliteration
 num_thai
 opencc
-pyChatGPT
 vosk
 sounddevice
 pydub
+openai

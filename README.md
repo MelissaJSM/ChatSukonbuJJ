@@ -1,6 +1,6 @@
 ![cover](readme/cyberchat.png)
 
-[中文](README.md "中文") [English](eng-README.md "English") [日本語](jp-README.md "日本語")
+[English](README.md "English") [中文](README-cn.md "中文")
 
 <p align="center">
 	<img alt="GitHub" src="https://img.shields.io/github/license/cjyaddone/ChatWaifu?color=red">
@@ -11,25 +11,31 @@
 #
 
 
-> ### 这是一个基于TTS+VITS的ChatGPT语音对话程序!
+> ### This is a chatting Waifu program use VITS & ChatGPT!
 
-效果演示BiliBIli:[《青春猪头少年不会梦见赛博女友》](https://www.bilibili.com/video/BV1rv4y1Q7eT "BiliBili")
+Effect demonstration on BiliBIli:[《青春猪头少年不会梦见赛博女友》](https://www.bilibili.com/video/BV1rv4y1Q7eT "BiliBili")
 
 **当前支持功能：**
-* [x] ChatGPT的对话聊天
-* [x] 回答转语音
-* [x] 多角色语音
-* [x] 语音识别对话 (研发了一款真正人性化的智能语音Q宝
-* [x] 对接Live2D的Web版本
-* [x] [对接Marai机器人](https://github.com/MuBai-He/ChatWaifu-marai)
+* [x] Talking with ChatGPT
+* [x] Convert AI's Response to wav file
+* [x] Multi-Character voice generator
+* [x] Voice Recognition
+* [x] L2D Enabled UI
+* [x] [Connect to Marai Robort](https://github.com/MuBai-He/ChatWaifu-marai)
 
 # 运行方法
-#### 如果您在国内，可能需要使用vpn
+#### Make sure that you are using chrome explorer
+#### donload and decompress the newest Release
+#### copy “ffmpeg-n4.4-latest-win64-gpl-4.4” to C:\\
+#### Run ChatWaifuServer.exe
+#### Run ChatWaifu.exe under ChatWaifuL2D/Game
 
-# 如何获取Token
-#### 在浏览器登入https://api.openai.com
-#### 在个人账号界面添加新的api token并复制保存
-#### 将值复制进入游戏并回车
+# How to get Token
+#### Log in to ChatGPT whith link:https://chat.openai.com
+#### Press F12 to enter command center
+#### Find Application -> cookie -> __Secure-next-auth.session-token
+![](readme/token.png)
+#### Copy the value into game and press ENTER
 
 ## <span id="915">6.鸣谢：</span>
 - [MoeGoe_GUI]https://github.com/CjangCjengh/MoeGoe_GUI

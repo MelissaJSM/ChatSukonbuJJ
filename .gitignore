@@ -381,3 +381,10 @@ monotonic_align/core.c
 
 # MacOS
 .DS_Store
+
+.venv/
+model/
+ChatWaifuGameL2D/game/Resources/ariu/
+ChatWaifuGameL2D/game/saves/
+ChatWaifuGameL2D/game/cache/
+log.txt

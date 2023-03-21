@@ -288,37 +288,37 @@ screen navigation():
 
         if main_menu:
 
-            textbutton _("开始游戏") action Start()
+            textbutton _("게임 시작") action Start()
 
         else:
 
-            textbutton _("历史") action ShowMenu("history")
+            textbutton _("로그") action ShowMenu("history")
 
-            textbutton _("保存") action ShowMenu("save")
+            textbutton _("저장") action ShowMenu("save")
 
-        textbutton _("读取游戏") action ShowMenu("load")
+        textbutton _("로드") action ShowMenu("load")
 
-        textbutton _("设置") action ShowMenu("preferences")
+        textbutton _("설정") action ShowMenu("preferences")
 
         if _in_replay:
 
-            textbutton _("结束回放") action EndReplay(confirm=True)
+            textbutton _("End playback") action EndReplay(confirm=True)
 
         elif not main_menu:
 
-            textbutton _("标题界面") action MainMenu()
+            textbutton _("메인화면") action MainMenu()
 
-        textbutton _("关于") action ShowMenu("about")
+        textbutton _("정보") action ShowMenu("about")
 
         if renpy.variant("pc") or (renpy.variant("web") and not renpy.variant("mobile")):
 
             ## “帮助”对移动设备来说并非必需或相关。
-            textbutton _("帮助") action ShowMenu("help")
+            textbutton _("도움말") action ShowMenu("help")
 
         if renpy.variant("pc"):
 
             ## 退出按钮在 iOS 上是被禁止使用的，在安卓和网页上也不是必要的。
-            textbutton _("退出") action Quit(confirm=not main_menu)
+            textbutton _("나가기") action Quit(confirm=not main_menu)
 
 
 style navigation_button is gui_button
@@ -457,7 +457,7 @@ screen game_menu(title, scroll=None, yinitial=0.0):
 
     use navigation
 
-    textbutton _("返回"):
+    textbutton _("돌아가기"):
         style "return_button"
 
         action Return()
@@ -533,20 +533,20 @@ screen about():
 
     ## 此 use 语句将 game_menu 界面包含到了这个界面内。子级 vbox 将包含在
     ## game_menu 界面的 viewport 内。
-    use game_menu(_("关于"), scroll="viewport"):
+    use game_menu(_("정보"), scroll="viewport"):
 
         style_prefix "about"
 
         vbox:
 
             label "[config.name!t]"
-            text _("版本 [config.version!t]\n")
+            text _("버전 [config.version!t]\n")
 
             ## gui.about 通常在 options.rpy 中设置。
             if gui.about:
                 text "[gui.about!t]\n"
 
-            text _("引擎：{a=https://www.renpy.org/}Ren'Py{/a} [renpy.version_only]\n\n[renpy.license!t]")
+            text _("엔진：{a=https://www.renpy.org/}Ren'Py{/a} [renpy.version_only]\n\n[renpy.license!t]")
 
 
 style about_label is gui_label
@@ -569,19 +569,19 @@ screen save():
 
     tag menu
 
-    use file_slots(_("保存"))
+    use file_slots(_("유지"))
 
 
 screen load():
 
     tag menu
 
-    use file_slots(_("读取游戏"))
+    use file_slots(_("불러오기"))
 
 
 screen file_slots(title):
 
-    default page_name_value = FilePageNameInputValue(pattern=_("第 {} 页"), auto=_("自动存档"), quick=_("快速存档"))
+    default page_name_value = FilePageNameInputValue(pattern=_("제 {}장"), auto=_("자동저장"), quick=_("빠른저장"))
 
     use game_menu(title):
 
@@ -622,7 +622,7 @@ screen file_slots(title):
 
                         add FileScreenshot(slot) xalign 0.5
 
-                        text FileTime(slot, format=_("{#file_time}%Y-%m-%d %H:%M"), empty=_("空存档位")):
+                        text FileTime(slot, format=_("{#file_time}%Y-%m-%d %H:%M"), empty=_("빈 슬롯")):
                             style "slot_time_text"
 
                         text FileSaveName(slot):
@@ -696,7 +696,7 @@ screen preferences():
 
     tag menu
 
-    use game_menu(_("设置"), scroll="viewport"):
+    use game_menu(_("설정"), scroll="viewport"):
 
         vbox:
 
@@ -1049,8 +1049,8 @@ screen mouse_help():
 screen gamepad_help():
 
     hbox:
-        label _("右扳机键\nA/底键")
-        text _("推进对话并激活界面。")
+        label _("오른쪽 방향키\nA/아래쪽 방향키")
+        text _("게임을 진행합니다")
 
     hbox:
         label _("左扳机键\n左肩键")
@@ -1071,9 +1071,9 @@ screen gamepad_help():
 
     hbox:
         label _("Y/顶键")
-        text _("隐藏用户界面。")
+        text _("인터페이스를 숨깁니다")
 
-    textbutton _("校准") action GamepadCalibrate()
+    textbutton _("조정") action GamepadCalibrate()
 
 
 style help_button is gui_button
@@ -1137,8 +1137,8 @@ screen confirm(message, yes_action, no_action):
                 xalign 0.5
                 spacing 150
 
-                textbutton _("确定") action yes_action
-                textbutton _("取消") action no_action
+                textbutton _("진행") action yes_action
+                textbutton _("취소") action no_action
 
     ## 右键点击退出并答复 no（取消）。
     key "game_menu" action no_action
@@ -1183,7 +1183,7 @@ screen skip_indicator():
         hbox:
             spacing 9
 
-            text _("正在快进")
+            text _("스킵")
 
             text "▸" at delayed_blink(0.0, 1.0) style "skip_triangle"
             text "▸" at delayed_blink(0.2, 1.0) style "skip_triangle"
@@ -1400,10 +1400,10 @@ screen quick_menu():
             xalign 0.5
             yalign 1.0
 
-            textbutton _("回退") action Rollback()
-            textbutton _("快进") action Skip() alternate Skip(fast=True, confirm=True)
-            textbutton _("自动") action Preference("auto-forward", "enable")
-            textbutton _("菜单") action ShowMenu()
+            textbutton _("돌아가기") action Rollback()
+            textbutton _("건너뛰기") action Skip() alternate Skip(fast=True, confirm=True)
+            textbutton _("자동진행") action Preference("auto-forward", "enable")
+            textbutton _("메뉴") action ShowMenu()
 
 
 style window:

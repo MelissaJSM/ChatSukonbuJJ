@@ -14,11 +14,18 @@ import queue
 import sounddevice as sd
 from vosk import Model, KaldiRecognizer
 import json
+import requests
+import os
+import openai
 
 chinese_model_path = ".\model\CN\model.pth"
 chinese_config_path = ".\model\CN\config.json"
-japanese_model_path = ".\model\H_excluded.pth"
-japanese_config_path = ".\model\config.json"
+japanese_model_path = ".\model\JP\model.pth"
+japanese_config_path = ".\model\JP\config.json"
+english_model_path = ".\model\EN\model.pth"
+english_config_path = ".\model\EN\config.json"
+korean_model_path = ".\model\KR\model.pth"
+korean_config_path = ".\model\KR\config.json"
 inputVoice = -1
 
 #########################################
@@ -109,34 +116,6 @@ s.bind(ip_port)
 s.listen(5)
 
 
-#### CHATGPT INITIALIZE ####
-import openai
-
-# 准备请求数据
-model_engine = "text-davinci-003"
-prompt = '''
-
-'''
-def chatgpt(question):
-    global prompt
-    input_message = question
-    prompt += input_message + "\n"
-    prompt += input_message + "\n"
-    # get reply from ChatGPT
-    completions = openai.Completion.create(
-        model=model_engine,
-        prompt=prompt,
-        temperature=0.9,
-        max_tokens=1024,
-        top_p=1
-    )
-
-    # output to terminal
-    prompt += completions.choices[0].text + "\n\n"
-    prompt += completions.choices[0].text + "\n\n"
-    return completions.choices[0].text
-
-
 ### TTS ###
 logging.getLogger('numba').setLevel(logging.WARNING)
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -170,72 +149,126 @@ def get_label(text, label):
     else:
         return False, text
 
+class vits():
+    def __init__(self, model_id):
+        if model_id == 0:
+            model = chinese_model_path
+            config = chinese_config_path
+        elif model_id == 1:
+            model = japanese_model_path
+            config = japanese_config_path
+        elif model_id == 2:
+            model = english_model_path
+            config = english_config_path
+        elif model_id == 3:
+            model = korean_model_path
+            config = korean_config_path
 
-def generateSound(inputString, id, model_id):
+        hps_ms = utils.get_hparams_from_file(config)
+        n_speakers = hps_ms.data.n_speakers if 'n_speakers' in hps_ms.data.keys() else 0
+        self.n_symbols = len(hps_ms.symbols) if 'symbols' in hps_ms.keys() else 0
 
-    if model_id == 0:
-        model = chinese_model_path
-        config = chinese_config_path
-    elif model_id == 1:
-        model = japanese_model_path
-        config = japanese_config_path
-        
+        self.net_g_ms = SynthesizerTrn(
+            self.n_symbols,
+            hps_ms.data.filter_length // 2 + 1,
+            hps_ms.train.segment_size // hps_ms.data.hop_length,
+            n_speakers=n_speakers,
+            **hps_ms.model).to(device)
+        _ = self.net_g_ms.eval()
+        self.hps_ms = hps_ms
+        utils.load_checkpoint(model, self.net_g_ms)
 
-    hps_ms = utils.get_hparams_from_file(config)
-    n_speakers = hps_ms.data.n_speakers if 'n_speakers' in hps_ms.data.keys() else 0
-    n_symbols = len(hps_ms.symbols) if 'symbols' in hps_ms.keys() else 0
-    emotion_embedding = hps_ms.data.emotion_embedding if 'emotion_embedding' in hps_ms.data.keys() else False
+    def generateSound(self, inputString, id):
+        if self.n_symbols != 0:
+            text = inputString
 
-    net_g_ms = SynthesizerTrn(
-        n_symbols,
-        hps_ms.data.filter_length // 2 + 1,
-        hps_ms.train.segment_size // hps_ms.data.hop_length,
-        n_speakers=n_speakers,
-        emotion_embedding=emotion_embedding,
-        **hps_ms.model).to(device)
-    _ = net_g_ms.eval()
-    utils.load_checkpoint(model, net_g_ms)
+            length_scale, text = get_label_value(
+                text, 'LENGTH', 1, 'length scale')
+            noise_scale, text = get_label_value(
+                text, 'NOISE', 0.667, 'noise scale')
+            noise_scale_w, text = get_label_value(
+                text, 'NOISEW', 0.8, 'deviation of noise')
+            cleaned, text = get_label(text, 'CLEANED')
 
-    if n_symbols != 0:
-        if not emotion_embedding:
-            #while True:
-            if(1 == 1):
-                choice = 't'
-                if choice == 't':
-                    text = inputString
-                    if text == '[ADVANCED]':
-                        text = "我不会说"
+            stn_tst = get_text(text, self.hps_ms, cleaned=cleaned)
+            
+            speaker_id = id 
+            out_path = "output.wav"
 
-                    length_scale, text = get_label_value(
-                        text, 'LENGTH', 1, 'length scale')
-                    noise_scale, text = get_label_value(
-                        text, 'NOISE', 0.667, 'noise scale')
-                    noise_scale_w, text = get_label_value(
-                        text, 'NOISEW', 0.8, 'deviation of noise')
-                    cleaned, text = get_label(text, 'CLEANED')
+            with no_grad():
+                x_tst = stn_tst.unsqueeze(0).to(device)
+                x_tst_lengths = LongTensor([stn_tst.size(0)]).to(device)
+                sid = LongTensor([speaker_id]).to(device)
+                audio = self.net_g_ms.infer(x_tst, x_tst_lengths, sid=sid, noise_scale=noise_scale,
+                                        noise_scale_w=noise_scale_w, length_scale=length_scale)[0][0, 0].data.to(device).cpu().float().numpy()
 
-                    stn_tst = get_text(text, hps_ms, cleaned=cleaned)
-                    
-                    speaker_id = id 
-                    out_path = "output.wav"
+            write(out_path, self.hps_ms.data.sampling_rate, audio)
+            print('Successfully saved!')
+            # torch.cuda.empty_cache()
 
-                    with no_grad():
-                        x_tst = stn_tst.unsqueeze(0).to(device)
-                        x_tst_lengths = LongTensor([stn_tst.size(0)]).to(device)
-                        sid = LongTensor([speaker_id]).to(device)
-                        audio = net_g_ms.infer(x_tst, x_tst_lengths, sid=sid, noise_scale=noise_scale,
-                                               noise_scale_w=noise_scale_w, length_scale=length_scale)[0][0, 0].data.to(device).cpu().float().numpy()
+get_dir = lambda x: os.path.split(os.path.realpath(x))[0]
 
-                write(out_path, hps_ms.data.sampling_rate, audio)
-                print('Successfully saved!')
-                torch.cuda.empty_cache()
+def download_file(url, save_dir):
+    local_filename = url.split('/')[-1]
+    r = requests.get(url, stream=True)
+    with open(os.path.join(save_dir, local_filename), 'wb') as f:
+        for chunk in r.iter_content(chunk_size=1024):
+            if chunk:  # filter out keep-alive new chunks
+                f.write(chunk)
+    return local_filename
 
+class openai_session():
 
+    def __init__(self, api_key):
+        self.api_key = api_key
+        openai.api_key = api_key
+        self.messages = []
+        self.model = "gpt-3.5-turbo"
+
+    def save(self):
+        with open("log.txt", 'w', encoding='utf-8') as f:
+            for message in self.messages:
+                f.write(message['role'] + ": " + message['content'] + "\n")
+
+    def set_role(self, role):
+        prefix = "이제부터 당신은 다음과 같은 역할을 맡아 대화를 진행합니다: \n"
+        self.messages.append({"role": "system", "content": prefix + role})
+
+    def set_greeting(self, greeting):
+        self.messages.append({"role": "assistant", "content": greeting})
+    
+    def send_message(self, message):
+        try:
+            self.messages.append({"role": "user", "content": message})
+            res = openai.ChatCompletion.create(
+                model=self.model,
+                messages=self.messages if len(self.messages) <= 10 else self.messages[0] + self.messages[-9:]
+            )
+            answer = res['choices'][0]['message']['content']
+            print(answer)
+            self.messages.append({"role": "assistant", "content": answer})
+            self.save()
+        except:
+            answer = "앗.. 뭐라고 하셨었죠? 다시 한번 말씀해 주실 수 있나요?"
+            self.messages.append({"role": "assistant", "content": answer})
+        return answer
 
 if __name__ == "__main__":
-    print("链接已生成，等待UI连接")
+    print("렌파이 클라이언트와 연결 대기중...")
+    if not os.path.isfile(korean_model_path):
+        os.makedirs(get_dir(korean_model_path), exist_ok=True)
+        print("한국어 모델 체크포인트 파일이 없습니다.해당 파일을 다운로드 받습니다.")
+        url = 'https://huggingface.co/spaces/skytnt/moe-tts/resolve/main/saved_model/6/model.pth'
+        download_file(url, get_dir(korean_model_path))
+    if not os.path.isfile(korean_config_path):
+        os.makedirs(get_dir(korean_config_path), exist_ok=True)
+        print("한국어 모델 설정 파일이 없습니다.해당 파일을 다운로드 받습니다.")
+        url = 'https://huggingface.co/spaces/skytnt/moe-tts/resolve/main/saved_model/6/config.json'
+        download_file(url, get_dir(korean_config_path))
+
     client, client_addr = s.accept()
-    print("链接已建立,等待接受token")
+    print("렌파이 클라이언트와 연결되었습니다. 렌파이에서 API KEY를 입력해주세요.")
+    print("API KEY는 https://platform.openai.com/account/api-keys 에서 발급할 수 있습니다.")
     total_data = bytes()
     while True:
         data = client.recv(1024)
@@ -243,11 +276,10 @@ if __name__ == "__main__":
         if len(data) < 1024:
             break
     session_token = total_data.decode()
-    # 使用你的 API 密钥初始化 OpenAI API 客户端
-    openai.api_key = str(session_token)
 
     if(session_token):
-        print("收到token:"+ session_token)
+        print(f"API KEY: {session_token[-8:]}")
+        oai = openai_session(session_token)
 
         total_data = bytes()
         while True:
@@ -256,32 +288,51 @@ if __name__ == "__main__":
             if len(data) < 1024:
                 break
         Setting = total_data.decode()
-        print("收到人设信息: "+Setting)
-        print("Chatgpt: "+ chatgpt(Setting))
+        oai.set_role(Setting)
+        print("배경 설정: "+ Setting)
+
+        total_data = bytes()
+        while True:
+            data = client.recv(1024)
+            total_data += data
+            if len(data) < 1024:
+                break
+        Setting = total_data.decode()
+        oai.set_greeting(Setting)
+        print("인사말: "+ Setting)
 
         inputMethod = int(client.recv(1024).decode()) #inputMethod: Keyboard/Voice
         if(inputMethod == 0): #Keyboard
-            print("设置为键盘输入")
+            print("키보드 모드로 설정되었습니다.")
         elif(inputMethod == 1): #voice
-            print("设置为语音输入")
-            inputVoice = int(client.recv(1024).decode())  # voiceInputMethod: CN/JP/EN
+            print("음성인식 모드로 설정되었습니다.")
+            inputVoice = int(client.recv(1024).decode())  # voiceInputMethod: CN/JP/EN/KO
             if(inputVoice == 0):
                 voiceModel = "cn"
-                print("设置中文为识别语言")
+                print("입력 언어를 중국어로 설정했습니다.")
             elif(inputVoice == 1):
                 voiceModel = "ja"
-                print("设置日本语为识别语言")
+                print("입력 언어를 일본어로 설정했습니다.")
             elif(inputVoice == 2):
                 voiceModel = "en-us"
-                print("设置英语为识别语言")
+                print("입력 언어를 영어로 설정했습니다.")
+            elif(inputVoice == 3):
+                voiceModel = "ko"
+                print("입력 언어를 한국어로 설정했습니다.")
 
         outputMethod = int(client.recv(1024).decode()) #outputMethod: CN/JP
         if(outputMethod == 0):
-            print("设置为中文输出")
+            print("출력 언어를 중국어로 설정했습니다.")
         elif(outputMethod == 1):
-            print("设置为日语输出")
+            print("출력 언어를 일본어로 설정했습니다.")
+        elif(outputMethod == 2):
+            print("출력 언어를 영어로 설정했습니다.")
+        elif(outputMethod == 3):
+            print("출력 언어를 한국어로 설정했습니다.")
 
         speaker = int(client.recv(1024).decode())  # outputMethod: CN/JP
+
+        tts = vits(outputMethod)
 
 
     while True:
@@ -300,17 +351,20 @@ if __name__ == "__main__":
 
         print("Question Received: " + question)
 
-        if(outputMethod == 1 and (inputVoice == 0 or inputVoice == 2 or inputVoice == -1)):
-            question = question + " 使用日本语回答"
-        if (outputMethod == 0 and (inputVoice == 1 or inputVoice == 2 or inputVoice == -1)):
-            question = question + " 使用中文回答"
-        answer = chatgpt(question)
-        answerG = answer
+        # if (inputVoice == 1 or inputVoice == 2 or inputVoice == -1):
+        #     if outputMethod == 0:
+        #         question = question + " 使用中文回答"
+        #     if outputMethod == 1:
+        #         question = question + " 日本語で答えてください"
+        #     if outputMethod == 2:
+        #         question = question + " Please answer in English"
+        #     if outputMethod == 3:
+        #         question = question + " 한국어로 답해주세요"
+
+        answer = oai.send_message(question)
         print("ChatGPT:")
         print(answer)
-        if(outputMethod == 0):
-            answerG = "[ZH]" + answer + "[ZH]"
-        generateSound(answerG,speaker,outputMethod)
+        tts.generateSound(answer, speaker)
 
         # convert wav to ogg
         src = "./output.wav"
