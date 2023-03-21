@@ -6,7 +6,7 @@ define e = Character("히요리")
 define y = Character("사용자")
 define config.gl2 = True
 
-image hiyori = Live2D("Resources/Hiyory", base=.6, loop = True, fade=True)
+image hiyori = Live2D("Resources/Hiyori", base=.6, loop = True, fade=True)
 
 init python:
     import socket

@@ -242,14 +242,14 @@ screen quick_menu():
             xalign 0.5
             yalign 1.0
 
-            textbutton _("回退") action Rollback()
-            textbutton _("历史") action ShowMenu('history')
-            textbutton _("快进") action Skip() alternate Skip(fast=True, confirm=True)
-            textbutton _("自动") action Preference("auto-forward", "enable")
-            textbutton _("保存") action ShowMenu('save')
-            textbutton _("快存") action QuickSave()
-            textbutton _("快读") action QuickLoad()
-            textbutton _("设置") action ShowMenu('preferences')
+            textbutton _("돌아가기") action Rollback()
+            textbutton _("내역") action ShowMenu('history')
+            textbutton _("건너뛰기") action Skip() alternate Skip(fast=True, confirm=True)
+            textbutton _("자동진행") action Preference("auto-forward", "enable")
+            textbutton _("저장") action ShowMenu('save')
+            textbutton _("빠른 저장") action QuickSave()
+            textbutton _("빠른 로드") action QuickLoad()
+            textbutton _("설정") action ShowMenu('preferences')
 
 
 ## 此代码确保只要用户没有主动隐藏界面，就会在游戏中显示 quick_menu 界面。
@@ -707,16 +707,16 @@ screen preferences():
 
                     vbox:
                         style_prefix "radio"
-                        label _("显示")
-                        textbutton _("窗口") action Preference("display", "window")
-                        textbutton _("全屏") action Preference("display", "fullscreen")
+                        label _("화면")
+                        textbutton _("창모드") action Preference("display", "window")
+                        textbutton _("전체화면") action Preference("display", "fullscreen")
 
                 vbox:
                     style_prefix "check"
-                    label _("快进")
-                    textbutton _("未读文本") action Preference("skip", "toggle")
-                    textbutton _("选项后继续") action Preference("after choices", "toggle")
-                    textbutton _("忽略转场") action InvertSelected(Preference("transitions", "toggle"))
+                    label _("스킵")
+                    textbutton _("읽지 않은 것만") action Preference("skip", "toggle")
+                    textbutton _("선택지 이후 자동 스킵") action Preference("after choices", "toggle")
+                    textbutton _("전환효과 무시") action InvertSelected(Preference("transitions", "toggle"))
 
                 ## 可在此处添加 radio_pref 或 check_pref 类型的额外 vbox，以添加
                 ## 额外的创建者定义的偏好设置。
@@ -729,51 +729,51 @@ screen preferences():
 
                 vbox:
 
-                    label _("文字速度")
+                    label _("텍스트 속도")
 
                     bar value Preference("text speed")
                     
-                    label _("自动播放等待时间")
+                    label _("자동 재생 간격")
                     
                     bar value Preference("auto-forward time")
 
 
-                    label _("等待语音播放完毕")
+                    label _("음성이 끝날 때까지 대기")
                     
-                    textbutton _("开启") action Preference("wait for voice", "toggle")
+                    textbutton _("ON") action Preference("wait for voice", "toggle")
                     
                 vbox:
 
                     if config.has_music:
-                        label _("音乐音量")
+                        label _("배경음")
 
                         hbox:
                             bar value Preference("music volume")
 
                     if config.has_sound:
 
-                        label _("音效音量")
+                        label _("효과음")
 
                         hbox:
                             bar value Preference("sound volume")
 
                             if config.sample_sound:
-                                textbutton _("测试") action Play("sound", config.sample_sound)
+                                textbutton _("테스트") action Play("sound", config.sample_sound)
 
 
                     if config.has_voice:
-                        label _("语音音量")
+                        label _("음성")
 
                         hbox:
                             bar value Preference("voice volume")
 
                             if config.sample_voice:
-                                textbutton _("测试") action Play("voice", config.sample_voice)
+                                textbutton _("테스트") action Play("voice", config.sample_voice)
 
                     if config.has_music or config.has_sound or config.has_voice:
                         null height gui.pref_spacing
 
-                        textbutton _("全部静音"):
+                        textbutton _("음소거"):
                             action Preference("all mute", "toggle")
                             style "mute_all_button"
 
@@ -863,7 +863,7 @@ screen history():
     ## 避免预缓存此界面，因为它可能非常大。
     predict False
 
-    use game_menu(_("历史"), scroll=("vpgrid" if gui.history_height else "viewport"), yinitial=1.0):
+    use game_menu(_("내역"), scroll=("vpgrid" if gui.history_height else "viewport"), yinitial=1.0):
 
         style_prefix "history"
 
@@ -891,7 +891,7 @@ screen history():
                     substitute False
 
         if not _history_list:
-            label _("尚无对话历史记录。")
+            label _("대화 기록이 없습니다.")
 
 
 ## 此代码决定了允许在历史记录界面上显示哪些标签。
