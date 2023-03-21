@@ -65,7 +65,7 @@ label inputMethod:
     $ renpy.block_rollback()
     show hiyori m01
     menu inputMethod1: #input 1
-        e "입력 방법을 선택해주세요"
+        e "입력 방법을 선택해주세요. (사실 음성 인식은 테스트 안 해봤어요)"
 
         "키보드 입력":
             python:
@@ -84,22 +84,22 @@ label inputMethod:
 label voiceInputMethod:
     $ renpy.block_rollback()
     menu inputLanguageChoice: #input 2
-        e "입력 언어를 선택해주세요"
+        e "언어를 선택해주세요"
 
-        "中文":
-            #block of code to run
-            python:
-                client.send(("0").encode())
-            jump outputMethod
-        "日本語":
-            #block of code to run
-            python:
-                client.send(("1").encode())
-            jump outputMethod
-        "영어":
-            python:
-                client.send(("2").encode())
-            jump outputMethod
+        # "中文":
+        #     #block of code to run
+        #     python:
+        #         client.send(("0").encode())
+        #     jump outputMethod
+        # "日本語":
+        #     #block of code to run
+        #     python:
+        #         client.send(("1").encode())
+        #     jump outputMethod
+        # "영어":
+        #     python:
+        #         client.send(("2").encode())
+        #     jump outputMethod
         "한국어":
             python:
                 client.send(("3").encode())

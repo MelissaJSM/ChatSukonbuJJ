@@ -1,0 +1,10 @@
+﻿I'm sorry, but errors were detected in your script. Please correct the
+errors listed below, and try again.
+
+
+File "script.rpy", line 222: Line is followed by a block, despite not being a menu choice. Did you forget a colon at the end of the line?
+    "기본 제공 모델이 아니에요"
+                    ^
+
+Ren'Py Version: Ren'Py 8.0.3.22090809
+Tue Mar 21 18:10:08 2023

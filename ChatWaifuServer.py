@@ -192,7 +192,7 @@ class vits():
 
             stn_tst = get_text(text, self.hps_ms, cleaned=cleaned)
             
-            speaker_id = id 
+            speaker_id = id if id != 999 else 0
             out_path = "output.wav"
 
             with no_grad():
