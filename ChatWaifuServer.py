@@ -242,15 +242,16 @@ class openai_session():
             self.messages.append({"role": "user", "content": message})
             res = openai.ChatCompletion.create(
                 model=self.model,
-                messages=self.messages if len(self.messages) <= 10 else self.messages[0] + self.messages[-9:]
+                messages=self.messages if len(self.messages) <= 10 else [self.messages[0]] + self.messages[-9:],
             )
             answer = res['choices'][0]['message']['content']
             print(answer)
             self.messages.append({"role": "assistant", "content": answer})
             self.save()
-        except:
+        except Exception as e:
             answer = "앗.. 뭐라고 하셨었죠? 다시 한번 말씀해 주실 수 있나요?"
-            self.messages.append({"role": "assistant", "content": answer})
+            print("에러 발생: " + e)
+
         return answer
 
 if __name__ == "__main__":
