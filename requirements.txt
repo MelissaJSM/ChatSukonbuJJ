@@ -20,3 +20,4 @@ vosk
 sounddevice
 pydub
 openai
+navertts

@@ -382,8 +382,22 @@ monotonic_align/core.c
 # MacOS
 .DS_Store
 
-log.txt
+# 가상환경
 .venv/
+
+# 모델은 업로드하지 않음
 model/
+
+# 개인 기록
+log.txt
+output.mp3
+
+# 개발 테스트용
+*.ipynb
+
+# 렌파이 생성 파일
+*.rpyc
 ChatWaifuGameL2D/game/saves/
 ChatWaifuGameL2D/game/cache/
+ChatWaifuGameL2D/game/Resources
+!ChatWaifuGameL2D/game/Resources/Hiyori

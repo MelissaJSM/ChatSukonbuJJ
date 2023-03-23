@@ -2,7 +2,7 @@
 
 # Declare the characters used by this game. The color parameter colors the character name.
 
-define e = Character("히요리")
+define e = Character("챗봇")
 define y = Character("사용자")
 define config.gl2 = True
 
@@ -23,180 +23,24 @@ init python:
 
 label start:
     $ renpy.block_rollback()
-    # Display a background. A placeholder image is displayed here by default, but you can also add a file in the image directory
-    # (named bg room.png or bg room.jpg) to display.
-
-    # scene bg library
-
-    # Display character portrait. A placeholder image is used here, but you can also add a named
-    # eileen happy.png to replace it.  
     show hiyori m01
 
-    # show eileen happy
+    jump chooseTts
 
-    # Lines of dialogue are shown here.
-
-
-    python:
-        token = renpy.input("open AI API KEY를 입력해주세요")
-        client.send(token.encode())
-    
-
-    jump uploadSetting
-    return
-    
-
-label uploadSetting:
+label chooseTts:
     $ renpy.block_rollback()
-    python:
-        token = renpy.input("원하는 배경 설정을 입력해주세요")
-        client.send(token.encode())
-    jump uploadInit
-
-label uploadInit:
-    $ renpy.block_rollback()
-    python:
-        token = renpy.input("해당 캐릭터의 첫 대사를 입력해주세요")
-        client.send(token.encode())
-    jump inputMethod
-
-
-label inputMethod:
-    $ renpy.block_rollback()
-    show hiyori m01
-    menu inputMethod1: #input 1
-        e "입력 방법을 선택해주세요. (사실 음성 인식은 테스트 안 해봤어요)"
-
-        "키보드 입력":
+    menu TTSChoice:
+        e"TTS 서비스를 선택해주세요"
+        "로컬 VITS":
             python:
                 client.send(("0").encode())
-                keyboard = True
-            jump outputMethod
-        "음성인식 입력":
+            jump modelChoice
+        "네이버 TTS":
             python:
                 client.send(("1").encode())
-                keyboard = False
-            jump voiceInputMethod
-    
-    
+            jump getApiKey
 
-
-label voiceInputMethod:
-    $ renpy.block_rollback()
-    menu inputLanguageChoice: #input 2
-        e "언어를 선택해주세요"
-
-        # "中文":
-        #     #block of code to run
-        #     python:
-        #         client.send(("0").encode())
-        #     jump outputMethod
-        # "日本語":
-        #     #block of code to run
-        #     python:
-        #         client.send(("1").encode())
-        #     jump outputMethod
-        # "영어":
-        #     python:
-        #         client.send(("2").encode())
-        #     jump outputMethod
-        "한국어":
-            python:
-                client.send(("3").encode())
-            jump outputMethod
-
-
-label outputMethod:
-    $ renpy.block_rollback()
-    menu languageChoice: #input 3
-        e "출력 언어를 선택해주세요"
-
-        # "中文":
-        #     #block of code to run
-        #     python:
-        #         client.send(("0").encode())
-        #     jump modelChoiceCN
-        # "日本語":
-        #     #block of code to run
-        #     python:
-        #         client.send(("1").encode())
-        #     jump modelChoiceJP
-        # "English":
-        #     python:
-        #         client.send(("2").encode())
-        #     jump modelChoiceEN
-        "한국어":
-            python:
-                client.send(("3").encode())
-            jump modelChoiceKR
-
-        
-# label modelChoiceCN:
-#     $ renpy.block_rollback()
-#     menu CNmodelChoice:
-#         e "我们来选择一个角色作为语音输出"
-
-#         "綾地寧々":
-#             python:
-#                 client.send(("0").encode())
-#         "在原七海":
-#             python:
-#                 client.send(("1").encode())
-#         "小茸":
-#             python:
-#                 client.send(("2").encode())
-#         "唐乐吟":
-#             python:
-#                 client.send(("3").encode())
-    
-#     if keyboard:
-#         jump talk_keyboard
-#     else:
-#         jump talk_voice
-    
-
-# label modelChoiceJP:
-#     $ renpy.block_rollback()
-#     menu JPmodelChoice:
-#         e "音声出力するキャラクターを選びましょう"
-
-#         "綾地寧々":
-#             python:
-#                 client.send(("0").encode())
-#         "因幡めぐる":
-#             python:
-#                 client.send(("1").encode())
-#         "朝武芳乃":
-#             python:
-#                 client.send(("2").encode())
-#         "常陸茉子":
-#             python:
-#                 client.send(("3").encode())
-#         "ムラサメ":
-#             python:
-#                 client.send(("4").encode())
-#         "鞍馬小春":
-#             python:
-#                 client.send(("5").encode())
-#         "在原七海":
-#             python:
-#                 client.send(("6").encode())
-
-#     if keyboard:
-#         jump talk_keyboard
-#     else:
-#         jump talk_voice
-
-# label modelChoiceEN:
-#     $ renpy.block_rollback()
-#     menu ENmodelChoice: #input 0
-#         e "Choose a character to output voice"
-
-#         "Aya":
-#             python:
-#                 client.send(("0").encode())
-
-label modelChoiceKR: # 수아, 미미르, 아린, 연화, 유화, 선배
+label modelChoice: # 수아, 미미르, 아린, 연화, 유화, 선배
     $ renpy.block_rollback()
     menu KRmodelChoice:
         e "음성 출력할 캐릭터를 선택해주세요"
@@ -220,11 +64,34 @@ label modelChoiceKR: # 수아, 미미르, 아린, 연화, 유화, 선배
             python:
                 client.send(("5").encode())
 
+    jump getApiKey
 
-    if keyboard:
-        jump talk_keyboard
-    else:
-        jump talk_voice
+
+label getApiKey:
+    $ renpy.block_rollback()
+
+    python:
+        token = renpy.input("open AI API KEY를 입력해주세요")
+        client.send(token.encode())
+    
+    jump uploadSetting
+    return
+    
+
+label uploadSetting:
+    $ renpy.block_rollback()
+    python:
+        token = renpy.input("원하는 배경 설정을 입력해주세요")
+        client.send(token.encode())
+    jump uploadInit
+
+label uploadInit:
+    $ renpy.block_rollback()
+    python:
+        token = renpy.input("해당 캐릭터의 첫 대사를 입력해주세요")
+        client.send(token.encode())
+    jump talk_keyboard
+
     
 label talk_keyboard:
     $ renpy.block_rollback()
@@ -234,30 +101,6 @@ label talk_keyboard:
         client.send(message.encode())
         data = bytes()
     jump checkRes
-
-
-label talk_voice:
-    $ renpy.block_rollback()
-    if(thinking == 0):
-        show hiyori m02
-    y "나："
-    python:
-        client.setblocking(0)
-        try:
-                finishInput = client.recv(1024)
-        except:
-                finishInput = bytes()
-                client.setblocking(1)
-
-    if(len(finishInput) > 0):
-        $ finishInput = finishInput.decode()
-        $ renpy.block_rollback()
-        y "[finishInput]"
-        $ thinking = 0
-        jump checkRes
-    $ thinking = 1
-    jump talk_voice
-
 
 label checkRes:
     $ renpy.block_rollback()
@@ -296,9 +139,5 @@ label answer:
     e "[response]"
     voice sustain
     
-    if keyboard:
-        $ client.send("음성 재생 완료".encode())
-        jump talk_keyboard
-    else:
-        $ client.send("음성 재생 완료".encode())
-        jump talk_voice
+    $ client.send("음성 재생 완료".encode())
+    jump talk_keyboard
