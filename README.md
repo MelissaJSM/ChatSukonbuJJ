@@ -24,7 +24,12 @@ pip3 install -r requirements.txt
 ```
 if error occurs, install visual studio and build tools and try again.
 
-### Download [Ren'py sdk](https://www.renpy.org/latest.html) and add path to environment variable
+### Install Ren'py
+- Download [Ren'py sdk](https://www.renpy.org/latest.html) and add path to environment variable
+- Install Live2D library
+```
+Setting - Install library - Install Live2D Cubism
+```
 
 ### Place your vits model ./userfile/tts/
 such this structure:
