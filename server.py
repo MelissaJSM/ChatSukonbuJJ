@@ -140,6 +140,8 @@ class openai_session():
         self.messages = []
         self.model = "gpt-3.5-turbo"
         self.currunt_log = f"userfile/log/{datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.json"
+        if not os.path.exists("userfile/log"):
+            os.makedirs("userfile/log")
 
     def save(self):
         with open(self.currunt_log, 'w', encoding='utf-8') as f:

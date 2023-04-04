@@ -387,9 +387,7 @@ monotonic_align/core.c
 
 # 개인 기록
 userfile/log/*
-!userfile/log/
 userfile/tts/*
-!userfile/tts/
 output.wav
 test.ogg
 log.txt
