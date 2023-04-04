@@ -386,7 +386,10 @@ monotonic_align/core.c
 .venv/
 
 # 개인 기록
-userfile/
+userfile/log/*
+!userfile/log/
+userfile/tts/*
+!userfile/tts/
 output.wav
 test.ogg
 log.txt
@@ -398,5 +401,5 @@ log.txt
 *.rpyc
 ChatWithGPT/game/saves/
 ChatWithGPT/game/cache/
-ChatWithGPT/game/Resources
-!ChatWithGPT/game/Resources/Hiyori/*
+ChatWithGPT/game/Resources/*
+!ChatWithGPT/game/Resources/Hiyori/
