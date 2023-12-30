@@ -20,4 +20,6 @@ vosk
 sounddevice
 pydub
 openai
-navertts
+SpeechRecognition
+Pyaudio
+gTTS
