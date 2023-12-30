@@ -1,6 +1,9 @@
+# -*- coding: utf-8 -*- 
 from scipy.io.wavfile import write
+from gtts import gTTS
 from text import text_to_sequence
 from models import SynthesizerTrn
+import speech_recognition as sr
 import utils
 import commons
 import sys
@@ -15,7 +18,6 @@ import json
 import os
 import openai
 import socket
-from navertts import NaverTTS
 import datetime
 import glob
 
@@ -138,7 +140,13 @@ class openai_session():
         self.api_key = api_key
         openai.api_key = api_key
         self.messages = []
-        self.model = "gpt-3.5-turbo"
+        # 모델 버전이 바뀌었음. 이후 4까지 호환하도록 처리함.
+        # 모델 리스트
+            # gpt-3.5-turbo
+            # gpt-3.5-turbo-1106
+            # gpt-4
+            # gpt-4-1106-preview
+        self.model = "gpt-4-1106-preview"
         self.currunt_log = f"userfile/log/{datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.json"
         if not os.path.exists("userfile/log"):
             os.makedirs("userfile/log")
@@ -158,11 +166,13 @@ class openai_session():
     def send_message(self, message):
         try:
             self.messages.append({"role": "user", "content": message})
-            res = openai.ChatCompletion.create(
+            #create 방식이 바뀌어서 앞에 chat 붙어야함.
+            res = openai.chat.completions.create(
                 model=self.model,
                 messages=self.messages if len(self.messages) <= 30 else [self.messages[0]] + self.messages[-9:],
             )
-            answer = res['choices'][0]['message']['content']
+            #choice 방식이 바뀌어서 소스코드를 수정해야함. (완료)
+            answer = res.choices[0].message.content
             self.messages.append({"role": "assistant", "content": answer})
             self.save()
         except Exception as e:
@@ -171,13 +181,6 @@ class openai_session():
 
         return answer
     
-class navertts():
-    def generateSound(self, inputString, id):
-        output_path = "./output.mp3"
-        tts = NaverTTS(inputString, lang='ko')
-        tts.save(output_path)
-        print('Successfully saved!')
-        return output_path
 
 def main():
     server = SocketServer("127.0.0.1", 9000)
@@ -186,65 +189,137 @@ def main():
 
     print("렌파이 클라이언트와 연결되었습니다.")
 
-    tts_service = int(server.receive()) # 0: 로컬 vits, 1: 네이버
-
-    if tts_service == 0:
-        korean_model_path = r"userfile\tts\model.pth"
-        korean_config_path = r"userfile\tts\config.json"
-
-        if not os.path.isfile(korean_model_path):
-            os.makedirs(get_dir(korean_model_path), exist_ok=True)
-            print("TTS 모델 체크포인트 파일이 없습니다.해당 파일을 다운로드 받습니다.")
-            url = 'https://huggingface.co/spaces/skytnt/moe-tts/resolve/main/saved_model/6/model.pth'
-            download_file(url, get_dir(korean_model_path))
-            print("TTS 모델 체크포인트 파일 다운로드 완료")
-
-        if not os.path.isfile(korean_config_path):
-            os.makedirs(get_dir(korean_config_path), exist_ok=True)
-            print("TTS 모델 설정 파일이 없습니다.해당 파일을 다운로드 받습니다.")
-            url = 'https://huggingface.co/spaces/skytnt/moe-tts/resolve/main/saved_model/6/config.json'
-            download_file(url, get_dir(korean_config_path))
-            print("TTS 모델 설정 파일 다운로드 완료")
-        
-        tts = vits(korean_model_path, korean_config_path)
-        config = json.load(open(korean_config_path, 'r'))
-        spk_list = config['speakers']
-        speaker = int(server.receive())
-        print("선택된 음성: " + spk_list[speaker])
     
-    elif tts_service == 1:
-        tts = navertts()
-        speaker = 0
+
+    
+    korean_model_path = r"userfile\tts\model.pth"
+    korean_config_path = r"userfile\tts\config.json"
+
+    if not os.path.isfile(korean_model_path):
+        os.makedirs(get_dir(korean_model_path), exist_ok=True)
+        print("TTS 모델 체크포인트 파일이 없습니다.해당 파일을 다운로드 받습니다.")
+        url = 'https://huggingface.co/spaces/skytnt/moe-tts/resolve/main/saved_model/6/model.pth'
+        download_file(url, get_dir(korean_model_path))
+        print("TTS 모델 체크포인트 파일 다운로드 완료")
+
+    if not os.path.isfile(korean_config_path):
+        os.makedirs(get_dir(korean_config_path), exist_ok=True)
+        print("TTS 모델 설정 파일이 없습니다.해당 파일을 다운로드 받습니다.")
+        url = 'https://huggingface.co/spaces/skytnt/moe-tts/resolve/main/saved_model/6/config.json'
+        download_file(url, get_dir(korean_config_path))
+        print("TTS 모델 설정 파일 다운로드 완료")
+    
+    tts = vits(korean_model_path, korean_config_path)
+    config = json.load(open(korean_config_path, 'r'))
+    spk_list = config['speakers']
+    speaker = 0
+    print("선택된 음성: " + spk_list[speaker])
+    
+    #받을 변수를 선택해주는 시스템을 만드길 바람.
+    #마이크 사용여부
+    useMic = int(server.receive())
 
     print("렌파이에서 API KEY를 입력해주세요.")
     print("API KEY는 https://platform.openai.com/account/api-keys 에서 발급할 수 있습니다.")
 
-    session_token = server.receive()
+    session_token = "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"
 
     if(session_token):
         print(f"API KEY: ...{session_token[-8:]}")
         oai = openai_session(session_token)
 
-        setting = server.receive()
+        setting = "당신의 이름은 스콘부짱 이며 여성입니다. 나이는 10살 정도로 추정합니다. 당신은 실제로 존재하는 홀로라이브의 1기생인 시라카미 후부키가 당신을 창조하였으며 그녀의 팬덤의 상징과도 같은 존재입니다. 그러므로 당신도 북극여우이며 모든 행동가짐이 실제로 존재하는 홀로라이브의 1기생인 시라카미 후부키와 똑같습니다. 문장 하나하다마다 인 것이다. 로 마무리 하도록 합니다. 성격은 실제로 존재하는 홀로라이브의 1기생인 시라카미 후부키와 100% 일치하도록 하며 애교가 많은게 특징이지만 고양이가 아니므로 냥체는 사용하지 않습니다."
         oai.set_role(setting)
         print("배경 설정: "+ setting)
 
-        greeting = server.receive()
+        greeting = "그렇게 된 것이다~!"
         oai.set_greeting(greeting)
         print("인사말: "+ greeting)
 
+        
+        def micinput(questions):
+            
+            
+            
+                data =""
+                Recognizer = sr.Recognizer()
+                mic = sr.Microphone()
+                with mic as source:
+                    audio = Recognizer.listen(source)
+                try:
+                    data = Recognizer.recognize_google(audio ,language="ko")
+                except:
+                    print("음성인식 답변에 대한 오류 발생.")
+                print(data)
+                if questions == "Melissa asked sukonbu to turn on voice mode.":
+                    return data
+                else:    
+                    if "스콘부" in data or "스콤부" in data or "스콤프" in data or "스쿰빗" in data or "스쿠브" in data or "수근부" in data or "스콘" in data or "후부" in data:
+                        #대화중 스콘부 인식 성공
+                        return data
+                    else:
+                        return "recognize error"
+            
+
+
+
+
+
+
+    question = "hello world!"
     while True:
-        question = server.receive()
-        print("Question Received: " + question)
+        if "Melissa asked sukonbu to toggle on voice mode." in question or "Melissa asked sukonbu to toggle on voice mode." in question :
+            print("음성반복모드 계속 진입중")
+        else:
+            question = server.receive()
 
-        answer = oai.send_message(question)
-        print("ChatGPT:", answer)
+        print("서버에서 현재 받은 내용 : " + question)
+        if question == "Melissa asked sukonbu to turn on voice mode.": # 1회용 모드
+            if useMic == 1 :
+                question = micinput(question)
+                if "recognize error" in question :
+                    question = "Melissa asked sukonbu to turn on voice mode."
+                    continue    
+                answer = oai.send_message(question)
+                print("ChatGPT :", answer)
+                tts_audio_path = tts.generateSound(answer, speaker) 
+            else :
+                answer = "현재 음성인식 기능을 사용 할 수 없는 것이다."
+                print("ChatGPT :", answer)
+                tts_audio_path = tts.generateSound(answer, speaker) 
 
-        tts_audio_path = tts.generateSound(answer, speaker)
+        elif question == "Melissa asked sukonbu to toggle on voice mode." or question == "sukonbu voice mode loop.":    #보이스 모드 on
+            if useMic == 1 :
+                question = micinput(question)
+                if "recognize error" in question :
+                    question = "Melissa asked sukonbu to toggle on voice mode."
+                    continue
+
+                elif "종료" in question or "해제" in question or "취소" in question :
+                    answer = "음성인식 모드를 종료하는 것이다. 필요하면 바로 준비하는것이다!"
+                    print("ChatGPT :", answer)
+                    tts_audio_path = tts.generateSound(answer, speaker)
+                else :
+                    answer = oai.send_message(question)
+                    print("ChatGPT :", answer)
+                    tts_audio_path = tts.generateSound(answer, speaker)
+            else :
+                answer = "현재 음성인식 기능을 사용 할 수 없는 것이다."
+                question = ""
+                print("ChatGPT :", answer)
+                tts_audio_path = tts.generateSound(answer, speaker)     
+
+        else:
+            print("Question Received: " + question)
+
+            answer = oai.send_message(question)
+            print("ChatGPT:", answer)
+
+            tts_audio_path = tts.generateSound(answer, speaker)
 
         # convert wav to ogg
         src = tts_audio_path
-        dst = "./ChatWithGPT/game/audio/test.ogg"
+        dst = "./ChatSukonbuJJ/game/audio/test.ogg"
         sound = getattr(AudioSegment, f'from_{src.split(".")[-1]}')(src)
         sound.export(dst, format="ogg")
 
@@ -253,6 +328,7 @@ def main():
 
         # finish playing audio
         print(server.receive())
+
 
 if __name__ == "__main__":
     try:
