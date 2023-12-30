@@ -222,7 +222,7 @@ def main():
     print("렌파이에서 API KEY를 입력해주세요.")
     print("API KEY는 https://platform.openai.com/account/api-keys 에서 발급할 수 있습니다.")
 
-    session_token = "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"
+    session_token = "여기에 open ai api 의 토큰값을 입력해 주세요."
 
     if(session_token):
         print(f"API KEY: ...{session_token[-8:]}")
