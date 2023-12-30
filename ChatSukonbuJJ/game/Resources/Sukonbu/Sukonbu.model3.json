@@ -1,0 +1,23 @@
+{
+	"Version": 3,
+	"FileReferences": {
+		"Moc": "sukonbu_chan.moc3",
+		"Textures": [
+			"sukonbu_chan.4096/texture_00.png"
+		],
+		"Physics": "sukonbu_chan.physics3.json",
+		"DisplayInfo": "sukonbu_chan.cdi3.json"
+	},
+	"Groups": [
+		{
+			"Target": "Parameter",
+			"Name": "LipSync",
+			"Ids": []
+		},
+		{
+			"Target": "Parameter",
+			"Name": "EyeBlink",
+			"Ids": []
+		}
+	]
+}

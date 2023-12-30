@@ -1,0 +1,12 @@
+﻿I'm sorry, but errors were detected in your script. Please correct the
+errors listed below, and try again.
+
+
+The label KRmodelChoice is defined twice, at File "game/script.rpy", line 36:
+    menu KRmodelChoice:
+and File "game/script.rpy", line 55:
+    menu KRmodelChoice:
+
+
+Ren'Py Version: Ren'Py 8.0.3.22090809
+Fri Dec 29 23:05:36 2023

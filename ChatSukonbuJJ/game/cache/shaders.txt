@@ -1,0 +1,15 @@
+renpy.ftl
+renpy.alpha renpy.texture live2d.flip_texture live2d.mask renpy.texture live2d.flip_texture live2d.mask
+renpy.geometry renpy.solid
+renpy.dissolve renpy.dissolve
+live2d.flip_texture renpy.geometry renpy.texture
+renpy.solid
+renpy.dissolve renpy.geometry
+renpy.texture live2d.flip_texture live2d.mask renpy.texture live2d.flip_texture live2d.mask
+renpy.texture live2d.flip_texture renpy.texture live2d.flip_texture
+live2d.flip_texture renpy.alpha renpy.geometry renpy.texture
+live2d.flip_texture live2d.mask renpy.geometry renpy.texture
+renpy.geometry renpy.texture
+renpy.alpha renpy.texture live2d.flip_texture renpy.texture live2d.flip_texture
+live2d.flip_texture live2d.mask renpy.alpha renpy.geometry renpy.texture
+renpy.texture

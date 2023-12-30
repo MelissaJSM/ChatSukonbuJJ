@@ -1,0 +1,190 @@
+{
+	"Version": 3,
+	"Parameters": [
+		{
+			"Id": "ParamAngleX",
+			"GroupId": "",
+			"Name": "角度 X"
+		},
+		{
+			"Id": "ParamAngleY",
+			"GroupId": "",
+			"Name": "角度 Y"
+		},
+		{
+			"Id": "ParamAngleZ",
+			"GroupId": "",
+			"Name": "角度 Z"
+		},
+		{
+			"Id": "ParamBodyAngleZ",
+			"GroupId": "",
+			"Name": "体の回転　Z"
+		},
+		{
+			"Id": "ParamEyeLOpen",
+			"GroupId": "",
+			"Name": "左目　開閉"
+		},
+		{
+			"Id": "ParamEyeROpen",
+			"GroupId": "",
+			"Name": "右目　開閉"
+		},
+		{
+			"Id": "ParamEyeBallX",
+			"GroupId": "",
+			"Name": "目玉 X"
+		},
+		{
+			"Id": "ParamEyeBallY",
+			"GroupId": "",
+			"Name": "目玉 Y"
+		},
+		{
+			"Id": "ParamBrowLY",
+			"GroupId": "",
+			"Name": "左眉　上下"
+		},
+		{
+			"Id": "ParamBrowRY",
+			"GroupId": "",
+			"Name": "右眉　上下"
+		},
+		{
+			"Id": "ParamMouthForm",
+			"GroupId": "",
+			"Name": "口　変形"
+		},
+		{
+			"Id": "ParamMouthOpenY",
+			"GroupId": "",
+			"Name": "口　開閉"
+		},
+		{
+			"Id": "ParamBreath",
+			"GroupId": "",
+			"Name": "呼吸"
+		},
+		{
+			"Id": "ParamHairFront",
+			"GroupId": "",
+			"Name": "髪揺れ　前"
+		},
+		{
+			"Id": "ParamHairSide",
+			"GroupId": "",
+			"Name": "髪揺れ　横"
+		},
+		{
+			"Id": "ParamHairBack",
+			"GroupId": "",
+			"Name": "髪揺れ　後"
+		},
+		{
+			"Id": "Param_01",
+			"GroupId": "",
+			"Name": "手をコーン"
+		},
+		{
+			"Id": "Param_02",
+			"GroupId": "",
+			"Name": "顔曇り"
+		},
+		{
+			"Id": "Param_03",
+			"GroupId": "",
+			"Name": "左手そえ"
+		},
+		{
+			"Id": "Param_04",
+			"GroupId": "",
+			"Name": "右手そえ"
+		},
+		{
+			"Id": "Param_05",
+			"GroupId": "",
+			"Name": "赤面"
+		},
+		{
+			"Id": "Param_06",
+			"GroupId": "",
+			"Name": "ぎゅっと目"
+		},
+		{
+			"Id": "Param_07",
+			"GroupId": "",
+			"Name": "いがみ口"
+		},
+		{
+			"Id": "Param_08",
+			"GroupId": "",
+			"Name": "のっぺり"
+		}
+	],
+	"ParameterGroups": [],
+	"Parts": [
+		{
+			"Id": "Part14",
+			"Name": "すこんぶ追加のっぺりめ.psd"
+		},
+		{
+			"Id": "Part12",
+			"Name": "すこんぶ追加そえ手.psd"
+		},
+		{
+			"Id": "Part11",
+			"Name": "すこんぶ追加顔パーツ.psd"
+		},
+		{
+			"Id": "Part10",
+			"Name": "すこんぶ_追加手.psd"
+		},
+		{
+			"Id": "Part9",
+			"Name": "すこんぶ_ぴあす.psd"
+		},
+		{
+			"Id": "Part",
+			"Name": "おび"
+		},
+		{
+			"Id": "Part2",
+			"Name": "あし"
+		},
+		{
+			"Id": "Part3",
+			"Name": "うで"
+		},
+		{
+			"Id": "Part4",
+			"Name": "くち"
+		},
+		{
+			"Id": "Part5",
+			"Name": "まえがみ"
+		},
+		{
+			"Id": "Part6",
+			"Name": "め"
+		},
+		{
+			"Id": "Part7",
+			"Name": "かお"
+		},
+		{
+			"Id": "Part8",
+			"Name": "ついんて"
+		},
+		{
+			"Id": "Part13",
+			"Name": "め"
+		}
+	],
+	"CombinedParameters": [
+		[
+			"ParamEyeBallX",
+			"ParamEyeBallY"
+		]
+	]
+}
