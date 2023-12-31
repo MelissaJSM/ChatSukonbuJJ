@@ -1,4 +1,7 @@
+![000](https://github.com/MelissaJSM/ChatSukonbuJJ/assets/91932382/40946acc-3f23-46bb-b19e-214018a4251b)
+
 해당 시스템은 시라카미 후부키가 무료로 배포해준 스콘부짱의 live2D 및 ChatGPT를 사용하여 만들어졌습니다.
+
 
 
 
