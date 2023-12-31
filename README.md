@@ -1,3 +1,7 @@
+해당 시스템은 시라카미 후부키가 무료로 배포해준 스콘부짱의 live2D 및 ChatGPT를 사용하여 만들어졌습니다.
+
+
+
 1. 데모 사용법
 
 release 에 가서 
@@ -183,8 +187,8 @@ ChatSukonbuJJ 폴더내에 ChatSukonbuJJ 폴더가 하나더있을텐데 그거�
 
 동작 영상
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/Okx18A8Hs9E?si=mZWXXuinOWPTOI6Q" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
 
+[![Video Label](http://img.youtube.com/vi/Okx18A8Hs9E/0.jpg)](https://youtu.be/Okx18A8Hs9E?si=oEX3nQDOyvB5FRFR)
 
 
 
